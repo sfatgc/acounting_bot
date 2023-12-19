@@ -18,7 +18,7 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 		Name string `json:"name"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
-		fmt.Fprint(w, "Hello, World!")
+		fmt.Fprint(w, "Hello, Werld!")
 		return
 	}
 	if d.Name == "" {
