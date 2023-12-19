@@ -27,11 +27,11 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 
 	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
-		log.Printf("unexpected message received: %#v", r.Body)
+		log.Printf("unexpected message received: %v", r.Body)
 		return
 	}
 
-	fmt.Printf("Message received: %#v", r.Body)
+	fmt.Printf("Message received: %v", r.Body)
 
 	/* var data tg_response{}
 	json.NewEncoder(w).Encode(data)
