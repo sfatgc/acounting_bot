@@ -21,12 +21,12 @@ resource "google_storage_bucket_object" "object" {
 
 resource "google_cloudfunctions2_function" "default" {
   name        = "function-v2"
-  location    = "us-central1"
-  description = "a new function"
+  location    = "us-west1"
+  description = "accounting bot dispatchMessages function"
 
   build_config {
-    runtime     = "nodejs16"
-    entry_point = "helloHttp" # Set the entry point
+    runtime     = "go121"
+    entry_point = "dispatchMessages" # Set the entry point
     source {
       storage_source {
         bucket = google_storage_bucket.default.name
