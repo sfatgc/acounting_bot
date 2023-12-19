@@ -1,6 +1,5 @@
 provider "google" {
-  project = "common-shit"
-  region  = "us-west1"
+  region = "us-west1"
 }
 
 locals {
