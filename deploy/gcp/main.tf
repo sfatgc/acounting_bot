@@ -10,12 +10,12 @@ resource "google_storage_bucket" "default" {
 
 locals {
   function_filename_timestamp = formatdate("ZZZhhmmDDMMMYYYY", timestamp())
-  function_filename           = "/tmp/function-source-${function_filename_timestamp}.zip"
+  function_filename           = "/tmp/function-source-${local.function_filename_timestamp}.zip"
 }
 
 data "archive_file" "default" {
   type        = "zip"
-  output_path = function_filename
+  output_path = local.function_filename
   source_dir  = "../../functions/accounting_bot/"
 }
 resource "google_storage_bucket_object" "object" {
