@@ -4,6 +4,7 @@ provider "google" {
 
 locals {
   services = [
+    "cloudresourcemanager.googleapis.com",
     "iam.googleapis.com",
     "cloudfunctions.googleapis.com"
   ]
