@@ -8,9 +8,14 @@ resource "google_storage_bucket" "default" {
   uniform_bucket_level_access = true
 }
 
+locals {
+  function_filename_timestamp = formatdate("ZZZhhmmDDMMMYYYY", timestamp())
+  function_filename           = "/tmp/function-source-${function_filename_timestamp}.zip"
+}
+
 data "archive_file" "default" {
   type        = "zip"
-  output_path = "/tmp/function-source.zip"
+  output_path = function_filename
   source_dir  = "../../functions/accounting_bot/"
 }
 resource "google_storage_bucket_object" "object" {
