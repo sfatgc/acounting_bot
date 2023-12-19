@@ -7,6 +7,7 @@ locals {
     "iam.googleapis.com",
     "cloudfunctions.googleapis.com",
     "cloudresourcemanager.googleapis.com",
+    "run.googleapis.com",
   ]
 }
 
