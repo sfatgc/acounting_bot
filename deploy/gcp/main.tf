@@ -19,7 +19,7 @@ data "archive_file" "default" {
   source_dir  = "../../functions/accounting_bot/"
 }
 resource "google_storage_bucket_object" "object" {
-  name   = "function-source.zip"
+  name   = "function-source-${data.archive_file.default.output_sha512}.zip"
   bucket = google_storage_bucket.default.name
   source = data.archive_file.default.output_path # Add path to the zipped function source code
 }
