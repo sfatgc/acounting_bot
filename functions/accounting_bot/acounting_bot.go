@@ -17,10 +17,10 @@ func init() {
 } */
 
 func dispatchMessages(w http.ResponseWriter, r *http.Request) {
-	var d struct {
+	/* var d struct {
 		UpdateID string `json:"update_id"`
 		Message  string `json:"message"`
-	}
+	} */
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
