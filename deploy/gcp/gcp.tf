@@ -8,6 +8,7 @@ locals {
     "cloudfunctions.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "run.googleapis.com",
+    "cloudbuild.googleapis.com",
   ]
 }
 

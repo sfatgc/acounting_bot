@@ -45,6 +45,9 @@ resource "google_cloudfunctions2_function" "default" {
     available_memory   = "256M"
     timeout_seconds    = 60
   }
+
+  depends_on = [google_project_service.project]
+
 }
 
 resource "google_cloud_run_service_iam_member" "member" {
