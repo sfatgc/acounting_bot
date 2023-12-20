@@ -15,7 +15,11 @@ func init() {
 
 func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 
-	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_BOT_TOKEN"))
+	var err error
+	var bot *tgbotapi.BotAPI
+	var update *tgbotapi.Update
+
+	bot, err = tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_BOT_TOKEN"))
 	if err != nil {
 		log.Panicf("Error getting TELEGRAM_BOT_TOKEN environment variable: \"%s\"", err)
 	}
@@ -24,7 +28,7 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
-	update, err := bot.HandleUpdate(r)
+	update, err = bot.HandleUpdate(r)
 
 	if err != nil {
 		if update.Message != nil { // If we got a message
