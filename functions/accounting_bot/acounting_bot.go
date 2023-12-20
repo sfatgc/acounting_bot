@@ -17,7 +17,7 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_BOT_TOKEN"))
 	if err != nil {
-		log.Panic(err)
+		log.Panicf("Error getting TELEGRAM_BOT_TOKEN environment variable: \"%s\"", err)
 	}
 
 	bot.Debug = true
