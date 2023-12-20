@@ -44,9 +44,16 @@ resource "google_cloudfunctions2_function" "default" {
     max_instance_count = 1
     available_memory   = "256M"
     timeout_seconds    = 60
+
+    secret_environment_variables {
+      key        = "TELEGRAM_BOT_TOKEN"
+      project_id = data.google_project.project.id
+      secret     = google_secret_manager_secret.secret.secret_id
+      version    = google_secret_manager_secret_version.accounting_bot_credentials_secret_version.version
+    }
   }
 
-  depends_on = [google_project_service.project]
+  depends_on = [google_project_service.project, google_secret_manager_secret_version.accounting_bot_credentials_secret_version]
 
 }
 
@@ -58,5 +65,5 @@ resource "google_cloud_run_service_iam_member" "member" {
 }
 
 output "function_uri" {
-  value = google_cloudfunctions2_function.default.service_config[0].uri
+  value = google_cloudfunctions2_function.default.url
 }

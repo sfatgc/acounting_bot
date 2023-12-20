@@ -2,6 +2,8 @@ provider "google" {
   region = "us-west1"
 }
 
+data "google_project" "project" {}
+
 locals {
   services = [
     "iam.googleapis.com",

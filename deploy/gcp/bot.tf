@@ -1,4 +1,6 @@
-provider "telegram" {}
+provider "telegram" {
+  bot_token = var.telegram_bot_token
+}
 
 resource "telegram_bot_webhook" "example" {
   url             = google_cloudfunctions2_function.default.url
@@ -17,4 +19,3 @@ resource "telegram_bot_commands" "example" {
     }
   ]
 }
-
