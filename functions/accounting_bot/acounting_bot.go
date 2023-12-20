@@ -31,6 +31,8 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 	update, err = bot.HandleUpdate(r)
 
 	if err != nil {
+		log.Printf("Function bot.HandleUpdate(r) returned an error: \"%v\"", err)
+	} else {
 		if update.Message != nil { // If we got a message
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
@@ -39,10 +41,8 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 
 			bot.Send(msg)
 		} else {
-			log.Printf("got update not containing message")
+			log.Printf("got update not containing message: %v", update)
 		}
-	} else {
-		log.Printf("Function bot.HandleUpdate(r) returned an error: \"%v\"", err)
 	}
 
 }
