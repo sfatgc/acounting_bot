@@ -38,7 +38,7 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 			log.Printf("got update not containing message")
 		}
 	} else {
-		log.Printf("Function bot.HandleUpdate(r) returned an error: \"%s\"", err)
+		log.Printf("Function bot.HandleUpdate(r) returned an error: \"%v\"", err)
 	}
 
 }
