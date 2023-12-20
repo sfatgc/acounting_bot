@@ -26,13 +26,19 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 
 	update, err := bot.HandleUpdate(r)
 
-	if err != nil && update.Message != nil { // If we got a message
-		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
+	if err != nil {
+		if update.Message != nil { // If we got a message
+			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
-		msg.ReplyToMessageID = update.Message.MessageID
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+			msg.ReplyToMessageID = update.Message.MessageID
 
-		bot.Send(msg)
+			bot.Send(msg)
+		} else {
+			log.Printf("got update not containing message")
+		}
+	} else {
+		log.Printf("Function bot.HandleUpdate(r) returned an error: \"%s\"", err)
 	}
 
 }
