@@ -11,6 +11,7 @@ locals {
     "cloudresourcemanager.googleapis.com",
     "run.googleapis.com",
     "cloudbuild.googleapis.com",
+    "secretmanager.googleapis.com",
   ]
 }
 
