@@ -7,6 +7,7 @@ require github.com/GoogleCloudPlatform/functions-framework-go v1.8.0
 require (
 	cloud.google.com/go/functions v1.15.1 // indirect
 	github.com/cloudevents/sdk-go/v2 v2.14.0 // indirect
+	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
