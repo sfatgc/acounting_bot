@@ -36,7 +36,20 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 		if update.Message != nil { // If we got a message
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+			var message_text string
+
+			if update.Message.IsCommand() {
+				switch update.Message.Command() {
+				case "start":
+					message_text = "Команда /start"
+				case "help":
+					message_text = "Команды:\n/start\n/help\n"
+				}
+			} else {
+				message_text = update.Message.Text
+			}
+
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, message_text)
 			msg.ReplyToMessageID = update.Message.MessageID
 
 			bot.Send(msg)
