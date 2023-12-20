@@ -8,6 +8,6 @@ resource "google_project_iam_binding" "project" {
   role    = "roles/secretmanager.secretAccessor"
 
   members = [
-    google_service_account.accounting_bot_sa.email
+    "serviceAccount:${google_service_account.accounting_bot_sa.email}"
   ]
 }
