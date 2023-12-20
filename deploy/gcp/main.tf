@@ -47,7 +47,7 @@ resource "google_cloudfunctions2_function" "default" {
 
     secret_environment_variables {
       key        = "TELEGRAM_BOT_TOKEN"
-      project_id = data.google_project.project.id
+      project_id = data.google_project.project.project_id
       secret     = google_secret_manager_secret.accounting_bot_credentials_secret.secret_id
       version    = "latest" //google_secret_manager_secret_version.accounting_bot_credentials_secret_version.version
     }
