@@ -41,9 +41,10 @@ resource "google_cloudfunctions2_function" "default" {
   }
 
   service_config {
-    max_instance_count = 1
-    available_memory   = "256M"
-    timeout_seconds    = 60
+    service_account_email = google_service_account.accounting_bot_sa.email
+    max_instance_count    = 1
+    available_memory      = "256M"
+    timeout_seconds       = 60
 
     secret_environment_variables {
       key        = "TELEGRAM_BOT_TOKEN"
