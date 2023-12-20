@@ -15,7 +15,7 @@ func init() {
 
 func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 
-	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_APITOKEN"))
+	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_BOT_TOKEN"))
 	if err != nil {
 		log.Panic(err)
 	}
