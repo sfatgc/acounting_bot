@@ -36,7 +36,7 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Printf("Error reading request body. %v", r.URL)
 	} else {
-		fmt.Printf("Message received: %v", value)
+		fmt.Printf("Message received: %v", string(value))
 	}
 	/* var data tg_response{}
 	json.NewEncoder(w).Encode(data)
