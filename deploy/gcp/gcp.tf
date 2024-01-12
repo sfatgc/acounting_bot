@@ -12,6 +12,7 @@ locals {
     "run.googleapis.com",
     "cloudbuild.googleapis.com",
     "secretmanager.googleapis.com",
+    "firestore.googleapis.com",
   ]
 }
 
