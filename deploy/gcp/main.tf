@@ -46,6 +46,10 @@ resource "google_cloudfunctions2_function" "default" {
     available_memory      = "256M"
     timeout_seconds       = 60
 
+    environment_variables = {
+      "GOOGLE_PROJECT_ID" = data.google_project.project.id
+    }
+
     secret_environment_variables {
       key        = "TELEGRAM_BOT_TOKEN"
       project_id = data.google_project.project.project_id
