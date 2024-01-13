@@ -1,37 +1,71 @@
 package accounting_bot
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+
+	"cloud.google.com/go/firestore"
 )
 
+var FIRESTORE_CLIENT *firestore.Client
+var FIRESTORE_ERR error
+var TG_BOT *tgbotapi.BotAPI
+var TG_ERR error
+
 func init() {
+
+	tg_bot_token, env_success := os.LookupEnv("TELEGRAM_BOT_TOKEN")
+	if !env_success {
+		log.Panic("Error getting TELEGRAM_BOT_TOKEN environment variable")
+	}
+
+	google_project_id, env_success := os.LookupEnv("GOOGLE_PROJECT_ID")
+	if !env_success {
+		log.Panic("Error getting GOOGLE_PROJECT_ID environment variable")
+	}
+
+	if TG_BOT == nil || TG_ERR != nil {
+
+		TG_BOT, TG_ERR = tgbotapi.NewBotAPI(tg_bot_token)
+		if TG_ERR != nil {
+			log.Panicf("Error initializing telegram bot API client: \"%s\"", TG_ERR)
+		}
+
+		TG_BOT.Debug = true
+
+		log.Printf("Authorized on account %s", TG_BOT.Self.UserName)
+
+	}
+
+	if FIRESTORE_CLIENT == nil || FIRESTORE_ERR != nil {
+
+		FIRESTORE_CLIENT, FIRESTORE_ERR = firestore.NewClient(context.TODO(), google_project_id)
+
+		if FIRESTORE_ERR != nil {
+			log.Panicf("Error initialising firestore client: \"%s\"", FIRESTORE_ERR)
+		}
+	}
+
 	functions.HTTP("dispatchMessages", dispatchMessages)
+
 }
 
 func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 
 	var err error
-	var bot *tgbotapi.BotAPI
 	var update *tgbotapi.Update
 
-	bot, err = tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_BOT_TOKEN"))
-	if err != nil {
-		log.Panicf("Error getting TELEGRAM_BOT_TOKEN environment variable: \"%s\"", err)
-	}
+	var ctx context.Context = r.Context()
 
-	bot.Debug = true
-
-	log.Printf("Authorized on account %s", bot.Self.UserName)
-
-	update, err = bot.HandleUpdate(r)
+	update, err = TG_BOT.HandleUpdate(r)
 
 	if err != nil {
-		log.Printf("Function bot.HandleUpdate(r) returned an error: \"%v\"", err)
+		log.Printf("Function TG_BOT.HandleUpdate(r) returned an error: \"%v\"", err)
 	} else {
 		if update.Message != nil { // If we got a message
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
@@ -39,20 +73,15 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 			var message_text string
 
 			if update.Message.IsCommand() {
-				switch update.Message.Command() {
-				case "start":
-					message_text = "Команда /start"
-				case "help":
-					message_text = "Команды:\n/start\n/help\n"
-				}
+				message_text = processMessageCommands(ctx, update.Message)
 			} else {
-				message_text = update.Message.Text
+				message_text = processMessageText(ctx, update.Message)
 			}
 
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, message_text)
 			msg.ReplyToMessageID = update.Message.MessageID
 
-			bot.Send(msg)
+			TG_BOT.Send(msg)
 		} else {
 			log.Printf("got update not containing message: %v", update)
 		}
