@@ -29,6 +29,11 @@ func init() {
 		log.Panic("Error getting GOOGLE_PROJECT_ID environment variable")
 	}
 
+	google_firestore_db_id, env_success := os.LookupEnv("GOOGLE_FIRESTORE_DB_ID")
+	if !env_success {
+		log.Panic("Error getting GOOGLE_FIRESTORE_DB_ID environment variable")
+	}
+
 	if TG_BOT == nil || TG_ERR != nil {
 
 		TG_BOT, TG_ERR = tgbotapi.NewBotAPI(tg_bot_token)
@@ -44,7 +49,7 @@ func init() {
 
 	if FIRESTORE_CLIENT == nil || FIRESTORE_ERR != nil {
 
-		FIRESTORE_CLIENT, FIRESTORE_ERR = firestore.NewClient(context.TODO(), google_project_id)
+		FIRESTORE_CLIENT, FIRESTORE_ERR = firestore.NewClientWithDatabase(context.TODO(), google_project_id, google_firestore_db_id)
 
 		if FIRESTORE_ERR != nil {
 			log.Panicf("Error initialising firestore client: \"%s\"", FIRESTORE_ERR)
