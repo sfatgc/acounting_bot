@@ -47,7 +47,7 @@ resource "google_cloudfunctions2_function" "default" {
     timeout_seconds       = 60
 
     environment_variables = {
-      "GOOGLE_PROJECT_ID" = data.google_project.project.id
+      "GOOGLE_PROJECT_ID" = split("/", data.google_project.project.id)[1]
     }
 
     secret_environment_variables {
