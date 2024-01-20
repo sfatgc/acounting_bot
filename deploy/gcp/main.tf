@@ -24,6 +24,11 @@ resource "google_storage_bucket_object" "object" {
   source = data.archive_file.default.output_path # Add path to the zipped function source code
 }
 
+
+
+locals {
+  google_firestore_db_id = split("/", google_firestore_database.database.id)
+}
 resource "google_cloudfunctions2_function" "default" {
   name        = "function-v2"
   location    = "us-west1"
@@ -48,7 +53,7 @@ resource "google_cloudfunctions2_function" "default" {
 
     environment_variables = {
       "GOOGLE_PROJECT_ID"      = split("/", data.google_project.project.id)[1]
-      "GOOGLE_FIRESTORE_DB_ID" = google_firestore_database.database.id
+      "GOOGLE_FIRESTORE_DB_ID" = element(local.google_firestore_db_id, length(local.google_firestore_db_id) - 1)
     }
 
     secret_environment_variables {
