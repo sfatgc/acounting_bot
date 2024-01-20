@@ -60,8 +60,6 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var update *tgbotapi.Update
 
-	var ctx context.Context = r.Context()
-
 	update, err = TG_BOT.HandleUpdate(r)
 
 	if err != nil {
@@ -69,6 +67,15 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 	} else {
 		if update.Message != nil { // If we got a message
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
+
+			u, err := getOrCreateUser(r.Context(), update.Message.From.ID, FIRESTORE_CLIENT)
+
+			if err != nil {
+				log.Printf("Function getOrCreateUser() returned an error: \"%v\"", err)
+				return
+			}
+
+			var ctx context.Context = context.WithValue(r.Context(), "USER", u)
 
 			var message_text string
 
