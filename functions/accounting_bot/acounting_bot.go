@@ -73,14 +73,7 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 		if update.Message != nil { // If we got a message
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
-			u, err := getOrCreateUser(r.Context(), update.Message.From.ID, FIRESTORE_CLIENT)
-
-			if err != nil {
-				log.Printf("Function getOrCreateUser() returned an error: \"%v\"", err)
-				return
-			}
-
-			var ctx context.Context = context.WithValue(r.Context(), "USER", u)
+			ctx, _ := setupUserContext(r.Context(), update.Message.From.ID, FIRESTORE_CLIENT)
 
 			var message_text string
 
