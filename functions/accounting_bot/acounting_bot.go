@@ -75,6 +75,10 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 
 			ctx, _ := setupUserContext(r.Context(), update.Message.From.ID, FIRESTORE_CLIENT)
 
+			u := r.Context().Value("USER").(TelegramUser)
+
+			u.updateStatistics(r.Context(), FIRESTORE_CLIENT)
+
 			var message_text string
 
 			if update.Message.IsCommand() {
