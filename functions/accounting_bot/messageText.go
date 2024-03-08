@@ -8,7 +8,7 @@ import (
 )
 
 func processMessageText(ctx context.Context, message *tgbotapi.Message) string {
-	u := ctx.Value("USER").(TelegramUser)
+	u := ctx.Value(userCtxKey("USER")).(TelegramUser)
 	message_count, err := u.getMessageCount(ctx, FIRESTORE_CLIENT)
 	if err != nil {
 		return fmt.Sprintf("NaN (%s)", err)

@@ -75,7 +75,7 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 
 			ctx, _ := setupUserContext(r.Context(), update.Message.From.ID, FIRESTORE_CLIENT)
 
-			u := ctx.Value("USER").(TelegramUser)
+			u := ctx.Value(userCtxKey("USER")).(TelegramUser)
 
 			u.updateStatistics(r.Context(), FIRESTORE_CLIENT)
 
