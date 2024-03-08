@@ -17,5 +17,5 @@ func setupUserContext(ctx context.Context, telegram_user_id int64, dbc *firestor
 		return nil, err
 	}
 
-	return context.WithValue(ctx, userCtxKey("USER"), u), nil
+	return context.WithValue(ctx, U, u), nil
 }

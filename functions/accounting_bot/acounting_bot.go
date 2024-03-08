@@ -16,6 +16,7 @@ var FIRESTORE_CLIENT *firestore.Client
 var FIRESTORE_ERR error
 var TG_BOT *tgbotapi.BotAPI
 var TG_ERR error
+var U userCtxKey = "USER"
 
 func init() {
 
@@ -75,7 +76,7 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 
 			ctx, _ := setupUserContext(r.Context(), update.Message.From.ID, FIRESTORE_CLIENT)
 
-			u := ctx.Value(userCtxKey("USER")).(TelegramUser)
+			u := ctx.Value(U).(TelegramUser)
 
 			u.updateStatistics(r.Context(), FIRESTORE_CLIENT)
 
