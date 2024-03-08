@@ -1,15 +1,14 @@
 package accounting_bot
 
 import (
-	"context"
 	"fmt"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func processMessageText(ctx context.Context, message *tgbotapi.Message) string {
-	u := ctx.Value(U).(TelegramUser)
-	message_count, err := u.getMessageCount(ctx, FIRESTORE_CLIENT)
+func processMessageText(runtime *botRuntime, message *tgbotapi.Message) string {
+	u := runtime.user
+	message_count, err := u.getMessageCount(runtime)
 	if err != nil {
 		return fmt.Sprintf("NaN (%s)", err)
 	}

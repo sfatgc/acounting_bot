@@ -16,17 +16,17 @@ type TelegramUser struct {
 	UserId string `json:"user_id,omitempty" firestore:"user_id,omitempty"`
 }
 
-func (u TelegramUser) updateStatistics(ctx context.Context, client *firestore.Client) (*TelegramUser, error) {
-	_, err := client.Collection("users").Doc(u.UserId).Update(ctx, []firestore.Update{
+func (u TelegramUser) updateStatistics(runtime *botRuntime) (*TelegramUser, error) {
+	_, err := runtime.db.Collection("users").Doc(u.UserId).Update(runtime.rCtx, []firestore.Update{
 		{Path: "message_count", Value: firestore.Increment(1)},
 	})
 
 	return &u, err
 }
 
-func (u TelegramUser) getMessageCount(ctx context.Context, client *firestore.Client) (int64, error) {
+func (u TelegramUser) getMessageCount(runtime *botRuntime) (int64, error) {
 
-	dsnapUser, err := client.Collection("users").Doc(u.UserId).Get(ctx)
+	dsnapUser, err := runtime.db.Collection("users").Doc(u.UserId).Get(runtime.rCtx)
 	if err != nil {
 		return 0, err
 	}
@@ -37,21 +37,21 @@ func (u TelegramUser) getMessageCount(ctx context.Context, client *firestore.Cli
 	return user.MessageCount, err
 }
 
-func createTelegramUser(ctx context.Context, telegram_id int64, client *firestore.Client) (*TelegramUser, error) {
+func createTelegramUser(runtime *botRuntime, telegram_id int64) (*TelegramUser, error) {
 
 	var u TelegramUser
 	user := User{}
 
-	err := client.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
+	err := runtime.db.RunTransaction(runtime.rCtx, func(ctx context.Context, tx *firestore.Transaction) error {
 
-		drefUser, _, err := client.Collection("users").Add(ctx, user)
+		drefUser, _, err := runtime.db.Collection("users").Add(ctx, user)
 		if err != nil {
 			log.Printf("An error has occurred: %s", err)
 		}
 
 		u.UserId = drefUser.ID
 
-		_, err = client.Collection("telegram_users").Doc(fmt.Sprintf("%d", telegram_id)).Set(ctx, u)
+		_, err = runtime.db.Collection("telegram_users").Doc(fmt.Sprintf("%d", telegram_id)).Set(ctx, u)
 		if err != nil {
 			log.Printf("An error has occurred: %s", err)
 		}
@@ -62,9 +62,9 @@ func createTelegramUser(ctx context.Context, telegram_id int64, client *firestor
 	return &u, err
 }
 
-func getTelegramUser(ctx context.Context, telegram_id int64, client *firestore.Client) (*TelegramUser, error) {
+func getTelegramUser(runtime *botRuntime, telegram_id int64) (*TelegramUser, error) {
 
-	dsnap, err := client.Collection("telegram_users").Doc(fmt.Sprintf("%d", telegram_id)).Get(ctx)
+	dsnap, err := runtime.db.Collection("telegram_users").Doc(fmt.Sprintf("%d", telegram_id)).Get(runtime.rCtx)
 
 	if err != nil {
 		return nil, err
@@ -81,10 +81,10 @@ func getTelegramUser(ctx context.Context, telegram_id int64, client *firestore.C
 	return &u, nil
 }
 
-func getOrCreateTelegramUser(ctx context.Context, telegram_id int64, client *firestore.Client) (*TelegramUser, error) {
-	u, err := getTelegramUser(ctx, telegram_id, client)
+func getOrCreateTelegramUser(runtime *botRuntime, telegram_id int64) (*TelegramUser, error) {
+	u, err := getTelegramUser(runtime, telegram_id)
 	if err != nil {
-		u, err = createTelegramUser(ctx, telegram_id, client)
+		u, err = createTelegramUser(runtime, telegram_id)
 	}
 	return u, err
 }

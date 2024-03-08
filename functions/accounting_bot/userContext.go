@@ -1,21 +1,18 @@
 package accounting_bot
 
 import (
-	"context"
 	"log"
-
-	"cloud.google.com/go/firestore"
 )
 
 type userCtxKey string
 
-func setupUserContext(ctx context.Context, telegram_user_id int64, dbc *firestore.Client) (context.Context, error) {
-	u, err := getOrCreateTelegramUser(ctx, telegram_user_id, dbc)
+func setupUserContext(runtime *botRuntime, telegram_user_id int64) (*TelegramUser, error) {
+	u, err := getOrCreateTelegramUser(runtime, telegram_user_id)
 
 	if err != nil {
 		log.Printf("Function getOrCreateUser() returned an error: \"%v\"", err)
 		return nil, err
 	}
 
-	return context.WithValue(ctx, U, u), nil
+	return u, nil
 }

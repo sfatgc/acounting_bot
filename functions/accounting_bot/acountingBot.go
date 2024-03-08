@@ -63,37 +63,40 @@ func init() {
 
 func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 
+	pRuntime := newRuntime(r.Context(), FIRESTORE_CLIENT, TG_BOT)
+
 	var err error
 	var update *tgbotapi.Update
 
-	update, err = TG_BOT.HandleUpdate(r)
+	update, err = pRuntime.tg.HandleUpdate(r)
 
 	if err != nil {
-		log.Printf("Function TG_BOT.HandleUpdate(r) returned an error: \"%v\"", err)
+		log.Fatalf("Function TG_BOT.HandleUpdate(r) returned an error: \"%v\"", err)
 	} else {
-		if update.Message != nil { // If we got a message
+		if update.Message == nil {
+			log.Printf("got update not containing message: %v", update)
+		} else { // If we got a message
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
-			ctx, _ := setupUserContext(r.Context(), update.Message.From.ID, FIRESTORE_CLIENT)
+			pRuntime.user, err = setupUserContext(pRuntime, update.Message.From.ID)
+			if err != nil {
+				log.Fatalf("Canot find user with TelegramID: \"%d\"", update.Message.From.ID)
+			}
 
-			u := ctx.Value(U).(TelegramUser)
-
-			u.updateStatistics(r.Context(), FIRESTORE_CLIENT)
+			pRuntime.user.updateStatistics(pRuntime)
 
 			var message_text string
 
 			if update.Message.IsCommand() {
-				message_text = processMessageCommands(ctx, update.Message)
+				message_text = processMessageCommands(pRuntime, update.Message)
 			} else {
-				message_text = processMessageText(ctx, update.Message)
+				message_text = processMessageText(pRuntime, update.Message)
 			}
 
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, message_text)
 			msg.ReplyToMessageID = update.Message.MessageID
 
-			TG_BOT.Send(msg)
-		} else {
-			log.Printf("got update not containing message: %v", update)
+			pRuntime.tg.Send(msg)
 		}
 	}
 

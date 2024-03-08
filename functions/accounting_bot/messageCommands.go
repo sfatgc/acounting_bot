@@ -1,12 +1,10 @@
 package accounting_bot
 
 import (
-	"context"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func processMessageCommands(ctx context.Context, message *tgbotapi.Message) string {
+func processMessageCommands(runtime *botRuntime, message *tgbotapi.Message) string {
 
 	var message_text string
 
