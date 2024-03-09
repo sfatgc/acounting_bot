@@ -1,5 +1,5 @@
-resource "google_secret_manager_secret" "accounting_bot_credentials_secret" {
-  secret_id = "accounting_bot_credentials"
+resource "google_secret_manager_secret" "bot_cred_tg_secret" {
+  secret_id = "bot_cred_tg"
 
   replication {
     auto {}
@@ -7,14 +7,14 @@ resource "google_secret_manager_secret" "accounting_bot_credentials_secret" {
 }
 
 
-resource "google_secret_manager_secret_version" "accounting_bot_credentials_secret_version" {
-  secret = google_secret_manager_secret.accounting_bot_credentials_secret.id
+resource "google_secret_manager_secret_version" "bot_cred_tg_secret_version" {
+  secret = google_secret_manager_secret.bot_cred_tg_secret.id
 
   secret_data = var.telegram_bot_token
 }
 
 resource "google_secret_manager_secret" "bot_cred_stripe_secret" {
-  secret_id = "accounting_bot_cred_stripe"
+  secret_id = "bot_cred_stripe"
 
   replication {
     auto {}
