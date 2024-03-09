@@ -62,6 +62,13 @@ resource "google_cloudfunctions2_function" "default" {
       secret     = google_secret_manager_secret.accounting_bot_credentials_secret.secret_id
       version    = google_secret_manager_secret_version.accounting_bot_credentials_secret_version.version
     }
+
+    secret_environment_variables {
+      key        = "PP_STRIPE_TOKEN"
+      project_id = data.google_project.project.project_id
+      secret     = google_secret_manager_secret.bot_cred_stripe_secret.secret_id
+      version    = google_secret_manager_secret_version.bot_cred_stripe_secret_version.version
+    }
   }
 
   depends_on = [google_project_service.project, google_secret_manager_secret_version.accounting_bot_credentials_secret_version]
