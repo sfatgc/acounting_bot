@@ -113,8 +113,10 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 			pRuntime.user.updateStatistics(pRuntime)
 
 			invc := tgbotapi.InputInvoiceMessageContent{
-				ProviderToken: PP_STRIPE_TOKEN,
 				Title:         "Here is the prices",
+				Description:   "Prices for service",
+				Payload:       "Internal invoice payload",
+				ProviderToken: PP_STRIPE_TOKEN,
 				Currency:      "USD",
 				Prices: []tgbotapi.LabeledPrice{
 					{Label: "Per hour", Amount: 7500},
