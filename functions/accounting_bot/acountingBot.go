@@ -2,6 +2,7 @@ package accounting_bot
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -17,6 +18,7 @@ var FIRESTORE_ERR error
 var TG_BOT *tgbotapi.BotAPI
 var TG_ERR error
 var U userCtxKey = "USER"
+var PP_STRIPE_TOKEN string
 
 func init() {
 
@@ -33,6 +35,11 @@ func init() {
 	google_firestore_db_id, env_success := os.LookupEnv("GOOGLE_FIRESTORE_DB_ID")
 	if !env_success {
 		log.Panic("Error getting GOOGLE_FIRESTORE_DB_ID environment variable")
+	}
+
+	PP_STRIPE_TOKEN, env_success = os.LookupEnv("PP_STRIPE_TOKEN")
+	if !env_success {
+		log.Panic("Error getting PP_STRIPE_TOKEN environment variable")
 	}
 
 	if TG_BOT == nil || TG_ERR != nil {
@@ -73,10 +80,8 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalf("Function TG_BOT.HandleUpdate(r) returned an error: \"%v\"", err)
 	} else {
-		if update.Message == nil {
-			log.Printf("got update not containing message: %v", *update)
-		} else { // If we got a message
-			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
+		if update.Message != nil { // If we got a message
+			log.Printf("Message from [%s] with text: \"%s\"", update.Message.From.UserName, update.Message.Text)
 
 			pRuntime.user, err = setupUserContext(pRuntime, update.Message.From.ID)
 			if err != nil {
@@ -97,6 +102,46 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 			msg.ReplyToMessageID = update.Message.MessageID
 
 			pRuntime.tg.Send(msg)
+		} else if update.InlineQuery != nil {
+			log.Printf("[%s] %s", update.InlineQuery.From.UserName, update.InlineQuery.Query)
+
+			pRuntime.user, err = setupUserContext(pRuntime, update.InlineQuery.From.ID)
+			if err != nil {
+				log.Fatalf("Canot find user with TelegramID: \"%d\"", update.InlineQuery.From.ID)
+			}
+
+			pRuntime.user.updateStatistics(pRuntime)
+
+			invc := tgbotapi.InputInvoiceMessageContent{
+				ProviderToken: PP_STRIPE_TOKEN,
+				Title:         "Here is the prices",
+				Currency:      "USD",
+				Prices: []tgbotapi.LabeledPrice{
+					{Label: "Per hour", Amount: 7500},
+					{Label: "Per day", Amount: 100000},
+					{Label: "Per project", Amount: 1000000},
+				},
+			}
+
+			res := tgbotapi.NewInlineQueryResultArticle(update.InlineQuery.ID,
+				"Prices Article Title",
+				fmt.Sprintf("Here are the prices for your request: \"%s\"", update.InlineQuery.Query))
+
+			res.InputMessageContent = invc
+
+			inlineConf := tgbotapi.InlineConfig{
+				InlineQueryID: update.InlineQuery.ID,
+				IsPersonal:    true,
+				CacheTime:     0,
+				Results:       []interface{}{res},
+			}
+
+			if _, err := pRuntime.tg.Request(inlineConf); err != nil {
+				log.Printf("Failed to send inline query response: %s", err)
+			}
+
+		} else {
+			log.Printf("got update not containing message nor inline query: %v", *update)
 		}
 	}
 
