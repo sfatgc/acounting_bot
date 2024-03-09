@@ -74,7 +74,7 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("Function TG_BOT.HandleUpdate(r) returned an error: \"%v\"", err)
 	} else {
 		if update.Message == nil {
-			log.Printf("got update not containing message: %v", update)
+			log.Printf("got update not containing message: %v", *update)
 		} else { // If we got a message
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
