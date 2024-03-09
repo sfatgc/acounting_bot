@@ -103,7 +103,7 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 
 			pRuntime.tg.Send(msg)
 		} else if update.InlineQuery != nil {
-			log.Printf("[%s] %s", update.InlineQuery.From.UserName, update.InlineQuery.Query)
+			log.Printf("Inline Query from [%s] with text: \"%s\"", update.InlineQuery.From.UserName, update.InlineQuery.Query)
 
 			pRuntime.user, err = setupUserContext(pRuntime, update.InlineQuery.From.ID)
 			if err != nil {
