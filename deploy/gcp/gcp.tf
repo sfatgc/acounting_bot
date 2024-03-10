@@ -8,7 +8,7 @@ data "google_client_config" "this" {}
 locals {
   region      = data.google_client_config.this.region
   project     = data.google_client_config.this.project
-  project_num = local.project.number
+  project_num = data.google_project.project.number
 
   services = [
     "iam.googleapis.com",
