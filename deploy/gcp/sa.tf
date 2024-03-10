@@ -7,11 +7,11 @@ resource "google_project_iam_binding" "bot_secrets_access" {
   project = data.google_project.project.id
   role    = "roles/secretmanager.secretAccessor"
 
-  /* condition {
+  condition {
     title       = "only_my_secrets"
     description = "Allows access only to the desired secrets"
-    expression  = "resource.name.startsWith(\"accounting_bot_\")"
-  } */
+    expression  = "resource.name.startsWith(\"projects/${local.project_num}/secrets/bot_cred_\")"
+  }
 
   members = [
     "serviceAccount:${google_service_account.accounting_bot_sa.email}"
