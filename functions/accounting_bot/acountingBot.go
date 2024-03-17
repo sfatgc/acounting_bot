@@ -11,6 +11,10 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 
 	"cloud.google.com/go/firestore"
+
+	"github.com/corazawaf/coraza/v3"
+	txhttp "github.com/corazawaf/coraza/v3/http"
+	"github.com/corazawaf/coraza/v3/types"
 )
 
 var FIRESTORE_CLIENT *firestore.Client
@@ -19,6 +23,28 @@ var TG_BOT *tgbotapi.BotAPI
 var TG_ERR error
 var U userCtxKey = "USER"
 var PP_STRIPE_TOKEN string
+
+func logError(error types.MatchedRule) {
+	msg := error.ErrorLog()
+	log.Printf("[logError][%s] %s\n", error.Rule().Severity(), msg)
+}
+
+func createWAF() coraza.WAF {
+	directivesFile := "./waf.conf"
+	if s := os.Getenv("DIRECTIVES_FILE"); s != "" {
+		directivesFile = s
+	}
+
+	waf, err := coraza.NewWAF(
+		coraza.NewWAFConfig().
+			WithErrorCallback(logError).
+			WithDirectivesFromFile(directivesFile),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return waf
+}
 
 func init() {
 
@@ -64,7 +90,10 @@ func init() {
 		}
 	}
 
-	functions.HTTP("dispatchMessages", dispatchMessages)
+	waf := createWAF()
+	waf_http_handler := txhttp.WrapHandler(waf, http.HandlerFunc(dispatchMessages))
+
+	functions.HTTP("dispatchMessages", waf_http_handler.ServeHTTP)
 
 }
 
