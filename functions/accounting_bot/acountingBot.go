@@ -30,7 +30,7 @@ func logError(error types.MatchedRule) {
 }
 
 func createWAF() coraza.WAF {
-	directivesFile := "./waf.conf"
+	directivesFile := "./serverless_function_source_code/waf.conf"
 	if s := os.Getenv("DIRECTIVES_FILE"); s != "" {
 		directivesFile = s
 	}
