@@ -99,7 +99,7 @@ func init() {
 
 func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 
-	pRuntime := newRuntime(r.Context(), FIRESTORE_CLIENT, TG_BOT)
+	pRuntime := newRuntime(r, FIRESTORE_CLIENT, TG_BOT)
 
 	var err error
 	var update *tgbotapi.Update

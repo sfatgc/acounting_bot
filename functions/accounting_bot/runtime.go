@@ -1,7 +1,7 @@
 package accounting_bot
 
 import (
-	"context"
+	"net/http"
 
 	"cloud.google.com/go/firestore"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -9,11 +9,11 @@ import (
 
 type botRuntime struct {
 	user *TelegramUser
-	rCtx context.Context
+	r    *http.Request
 	db   *firestore.Client
 	tg   *tgbotapi.BotAPI
 }
 
-func newRuntime(ctx context.Context, db *firestore.Client, tg *tgbotapi.BotAPI) *botRuntime {
-	return &botRuntime{nil, ctx, db, tg}
+func newRuntime(r *http.Request, db *firestore.Client, tg *tgbotapi.BotAPI) *botRuntime {
+	return &botRuntime{nil, r, db, tg}
 }

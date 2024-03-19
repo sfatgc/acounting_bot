@@ -17,7 +17,7 @@ type TelegramUser struct {
 }
 
 func (u TelegramUser) updateStatistics(runtime *botRuntime) (*TelegramUser, error) {
-	_, err := runtime.db.Collection("users").Doc(u.UserId).Update(runtime.rCtx, []firestore.Update{
+	_, err := runtime.db.Collection("users").Doc(u.UserId).Update(runtime.r.Context(), []firestore.Update{
 		{Path: "message_count", Value: firestore.Increment(1)},
 	})
 
@@ -26,7 +26,7 @@ func (u TelegramUser) updateStatistics(runtime *botRuntime) (*TelegramUser, erro
 
 func (u TelegramUser) getMessageCount(runtime *botRuntime) (int64, error) {
 
-	dsnapUser, err := runtime.db.Collection("users").Doc(u.UserId).Get(runtime.rCtx)
+	dsnapUser, err := runtime.db.Collection("users").Doc(u.UserId).Get(runtime.r.Context())
 	if err != nil {
 		return 0, err
 	}
@@ -42,7 +42,7 @@ func createTelegramUser(runtime *botRuntime, telegram_id int64) (*TelegramUser, 
 	var u TelegramUser
 	user := User{}
 
-	err := runtime.db.RunTransaction(runtime.rCtx, func(ctx context.Context, tx *firestore.Transaction) error {
+	err := runtime.db.RunTransaction(runtime.r.Context(), func(ctx context.Context, tx *firestore.Transaction) error {
 
 		drefUser, _, err := runtime.db.Collection("users").Add(ctx, user)
 		if err != nil {
@@ -64,7 +64,7 @@ func createTelegramUser(runtime *botRuntime, telegram_id int64) (*TelegramUser, 
 
 func getTelegramUser(runtime *botRuntime, telegram_id int64) (*TelegramUser, error) {
 
-	dsnap, err := runtime.db.Collection("telegram_users").Doc(fmt.Sprintf("%d", telegram_id)).Get(runtime.rCtx)
+	dsnap, err := runtime.db.Collection("telegram_users").Doc(fmt.Sprintf("%d", telegram_id)).Get(runtime.r.Context())
 
 	if err != nil {
 		return nil, err
