@@ -170,7 +170,7 @@ func dispatchMessages(w http.ResponseWriter, r *http.Request) {
 			}
 
 		} else {
-			log.Printf("got update not containing message nor inline query: %v", *update)
+			log.Printf("got update not containing message nor inline query: %v\n%s", *update, processMessageDiagnnostics(pRuntime))
 		}
 	}
 
